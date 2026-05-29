@@ -41,6 +41,31 @@ def build_arg_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _create_fallback_model(YOLO) -> object:
+    for spec in ("yolov8n.yaml", "yolov8.yaml"):
+        try:
+            return YOLO(spec)
+        except Exception:
+            pass
+
+    try:
+        import ultralytics
+
+        root = Path(ultralytics.__file__).resolve().parent
+        for rel in (
+            "cfg/models/v8/yolov8.yaml",
+            "models/v8/yolov8.yaml",
+            "yolo/cfg/models/v8/yolov8.yaml",
+        ):
+            path = root / rel
+            if path.exists():
+                return YOLO(str(path))
+    except Exception:
+        pass
+
+    return YOLO("yolov8n.yaml")
+
+
 def main() -> int:
     args = build_arg_parser().parse_args()
     root = Path(__file__).resolve().parent
@@ -59,9 +84,9 @@ def main() -> int:
         model_spec = str(weights_path) if weights_path.exists() else args.weights
         model = YOLO(model_spec)
     except ModuleNotFoundError:
-        model = YOLO("yolov8n.yaml")
+        model = _create_fallback_model(YOLO)
     except (FileNotFoundError, ConnectionError, OSError):
-        model = YOLO("yolov8n.yaml")
+        model = _create_fallback_model(YOLO)
 
     model.train(
         data=str(data_path),
