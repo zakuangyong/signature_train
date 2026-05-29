@@ -28,7 +28,7 @@ def _resolve_device(device: str) -> str:
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default="datasets/signature/signature.yaml")
-    parser.add_argument("--weights", default="models/yolo11n.pt")
+    parser.add_argument("--weights", default="models/yolov8n.pt")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--batch", type=int, default=-1)
@@ -36,7 +36,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--project", default="runs/detect")
-    parser.add_argument("--name", default="signature_yolo11n")
+    parser.add_argument("--name", default="signature_yolov8n")
     parser.add_argument("--exist-ok", action="store_true")
     return parser
 

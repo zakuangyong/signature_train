@@ -26,10 +26,10 @@ def _resolve_device(device: str) -> str:
 
 
 def _default_weights(root: Path) -> Path:
-    best = (root / "runs/detect/signature_yolo11n/weights/best.pt").resolve()
+    best = (root / "runs/detect/signature_yolov8n/weights/best.pt").resolve()
     if best.exists():
         return best
-    return (root / "models/yolo11n.pt").resolve()
+    return (root / "models/yolov8n.pt").resolve()
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
