@@ -7,3 +7,5 @@ runs/
 datasets/**/labels/*.cache
 
 *.log
+
+models/*.pt

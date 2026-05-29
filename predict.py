@@ -29,7 +29,7 @@ def _default_weights(root: Path) -> Path:
     best = (root / "runs/detect/signature_yolov8n/weights/best.pt").resolve()
     if best.exists():
         return best
-    return (root / "models/yolov8n.pt").resolve()
+    return (root / "yolov8n.pt").resolve()
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -50,18 +50,23 @@ def main() -> int:
     root = Path(__file__).resolve().parent
     device = _resolve_device(args.device)
 
-    weights_path = _resolve_path(args.weights, root) if args.weights else _default_weights(root)
+    if args.weights:
+        weights_spec: str | Path = _resolve_path(args.weights, root)
+        if not Path(weights_spec).exists():
+            raise FileNotFoundError(f"weights not found: {weights_spec}")
+    else:
+        default_weight_path = _default_weights(root)
+        weights_spec = str(default_weight_path) if default_weight_path.exists() else "yolov8n.pt"
+
     source_path = _resolve_path(args.source, root)
     project_path = _resolve_path(args.project, root)
 
-    if not weights_path.exists():
-        raise FileNotFoundError(f"weights not found: {weights_path}")
     if not source_path.exists():
         raise FileNotFoundError(f"source not found: {source_path}")
 
     from ultralytics import YOLO
 
-    model = YOLO(str(weights_path))
+    model = YOLO(str(weights_spec))
     model.predict(
         source=str(source_path),
         imgsz=args.imgsz,

@@ -52,12 +52,17 @@ def main() -> int:
 
     if not data_path.exists():
         raise FileNotFoundError(f"data yaml not found: {data_path}")
-    if not weights_path.exists():
-        raise FileNotFoundError(f"weights not found: {weights_path}")
 
     from ultralytics import YOLO
 
-    model = YOLO(str(weights_path))
+    try:
+        model_spec = str(weights_path) if weights_path.exists() else args.weights
+        model = YOLO(model_spec)
+    except ModuleNotFoundError:
+        model = YOLO("yolov8n.yaml")
+    except (FileNotFoundError, ConnectionError, OSError):
+        model = YOLO("yolov8n.yaml")
+
     model.train(
         data=str(data_path),
         epochs=args.epochs,
